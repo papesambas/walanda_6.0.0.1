@@ -3,3 +3,7 @@ framework:
         # The paths to make available to the asset mapper.
         paths:
             - assets/
+
+# config/packages/asset_mapper.yaml
+sensiolabs_typescript:
+    source_dir: ['%kernel.project_dir%/assets/typescript']
