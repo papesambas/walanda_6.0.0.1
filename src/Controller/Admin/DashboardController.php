@@ -2,6 +2,8 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Noms;
+use App\Entity\Prenoms;
 use App\Entity\Users;
 use Symfony\UX\Chartjs\Model\Chart;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +22,7 @@ class DashboardController extends AbstractDashboardController
     ){}
 
     #[Route('/admin', name: 'admin')]
-    #[IsGranted('ROLE_ADMIN')]
+    #[IsGranted('ROLE_USER')]
     public function index(): Response
     {
         $chart = $this->chartBuilder->createChart(Chart::TYPE_LINE);
@@ -81,6 +83,15 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
+        yield MenuItem::subMenu('Blog', 'fa fa-article')->setSubItems([
+            MenuItem::linkToCrud('Noms', 'fa fa-tags', Noms::class),
+            MenuItem::linkToCrud('Prénoms', 'fa fa-file-text', Prenoms::class),
+            //MenuItem::linkToCrud('Comments', 'fa fa-comment', Comment::class),
+        ]);
+        //->setSubItems([
+        //    yield MenuItem::linkToCrud('Noms','fas fa-bars',Noms::class),
+        //    yield MenuItem::linkToCrud('Prénom','fas fa-bars',Prenoms::class)
+        //]);
         yield MenuItem::linkToCrud('Utilisateurs','fas fa-users', Users::class);
         // yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
     }
