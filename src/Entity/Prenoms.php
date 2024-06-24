@@ -2,41 +2,42 @@
 
 namespace App\Entity;
 
-use App\Model\TimestampedInterface;
+use App\Entity\Trait\CreatedAtTrait;
+use App\Entity\Trait\EntityTrackingTrait;
+use App\Entity\Trait\SlugTrait;
 use App\Repository\PrenomsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PrenomsRepository::class)]
-class Prenoms implements TimestampedInterface
+class Prenoms
 {
+    use CreatedAtTrait;
+    use SlugTrait;
+    use EntityTrackingTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 60)]
+    #[ORM\Column(length: 100)]
     private ?string $designation = null;
 
-    #[ORM\Column(length: 60, nullable: true)]
-    private ?string $slug = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updatedAt = null;
-
-    /**
-     * @var Collection<int, Users>
-     */
-    #[ORM\OneToMany(targetEntity: Users::class, mappedBy: 'prenom')]
+    #[ORM\OneToMany(mappedBy: 'prenom', targetEntity: Users::class)]
     private Collection $users;
+
+    #[ORM\OneToMany(mappedBy: 'prenom', targetEntity: Peres::class)]
+    private Collection $peres;
+
+    #[ORM\OneToMany(mappedBy: 'prenom', targetEntity: Meres::class)]
+    private Collection $meres;
 
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->peres = new ArrayCollection();
+        $this->meres = new ArrayCollection();
     }
 
     public function __toString()
@@ -57,42 +58,6 @@ class Prenoms implements TimestampedInterface
     public function setDesignation(string $designation): static
     {
         $this->designation = $designation;
-
-        return $this;
-    }
-
-    public function getSlug(): ?string
-    {
-        return $this->slug;
-    }
-
-    public function setSlug(?string $slug): static
-    {
-        $this->slug = $slug;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
 
         return $this;
     }
@@ -121,6 +86,66 @@ class Prenoms implements TimestampedInterface
             // set the owning side to null (unless already changed)
             if ($user->getPrenom() === $this) {
                 $user->setPrenom(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Peres>
+     */
+    public function getPeres(): Collection
+    {
+        return $this->peres;
+    }
+
+    public function addPere(Peres $pere): static
+    {
+        if (!$this->peres->contains($pere)) {
+            $this->peres->add($pere);
+            $pere->setPrenom($this);
+        }
+
+        return $this;
+    }
+
+    public function removePere(Peres $pere): static
+    {
+        if ($this->peres->removeElement($pere)) {
+            // set the owning side to null (unless already changed)
+            if ($pere->getPrenom() === $this) {
+                $pere->setPrenom(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Meres>
+     */
+    public function getMeres(): Collection
+    {
+        return $this->meres;
+    }
+
+    public function addMere(Meres $mere): static
+    {
+        if (!$this->meres->contains($mere)) {
+            $this->meres->add($mere);
+            $mere->setPrenom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMere(Meres $mere): static
+    {
+        if ($this->meres->removeElement($mere)) {
+            // set the owning side to null (unless already changed)
+            if ($mere->getPrenom() === $this) {
+                $mere->setPrenom(null);
             }
         }
 

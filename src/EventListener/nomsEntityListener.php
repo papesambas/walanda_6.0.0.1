@@ -25,29 +25,28 @@ class nomsEntityListener
 
     public function prePersist(Noms $nom, LifecycleEventArgs $arg): void
     {
-        /*$user = $this->tokenStorage->getToken()->getUser();
+        /*$user = $user = $this->tokenStorage->getToken()->getUser();
         if ($user === null) {
             throw new LogicException('User cannot be null here ...');
         }*/
         $nom
             ->setCreatedAt(new \DateTimeImmutable('now'))
-            ->setSlug($this->getNomsSlug($nom));
+            ->setSlug($this->getClassesSlug($nom));
     }
 
     public function preUpdate(Noms $nom, LifecycleEventArgs $arg): void
     {
-        $user = $this->tokenStorage->getToken()->getUser();
+        $user = $user = $this->tokenStorage->getToken()->getUser();
         /*if ($user === null) {
             throw new LogicException('User cannot be null here ...');
         }*/
 
         $nom
-            ->setUpdatedAt(new \DateTimeImmutable('now'))
-            ->setSlug($this->getNomsSlug($nom));
+            ->setUpdatedAt(new \DateTimeImmutable('now'));
     }
 
 
-    private function getNomsSlug(Noms $nom): string
+    private function getClassesSlug(Noms $nom): string
     {
         $slug = mb_strtolower($nom->getDesignation() . '' . $nom->getId() . '' . time(), 'UTF-8');
         return $this->Slugger->slug($slug);

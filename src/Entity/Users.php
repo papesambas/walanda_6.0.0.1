@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use App\Entity\Trait\CreatedAtTrait;
+use App\Entity\Trait\EntityTrackingTrait;
+use App\Entity\Trait\SlugTrait;
 use App\Repository\UsersRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -9,21 +12,20 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
-#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
 #[UniqueEntity(fields: ['username'], message: 'There is already an account with this username')]
 class Users implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    use CreatedAtTrait;
+    use SlugTrait;
+    use EntityTrackingTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(length: 180, unique: true)]
     private ?string $username = null;
 
-    /**
-     * @var list<string> The user roles
-     */
     #[ORM\Column]
     private array $roles = [];
 
@@ -41,31 +43,29 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: false)]
     private ?Prenoms $prenom = null;
 
-    #[ORM\Column(length: 126, nullable: true)]
-    private ?string $slug = null;
-
     #[ORM\Column(length: 255)]
     private ?string $email = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $adresse = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column]
     private ?bool $isActif = true;
 
-    #[ORM\Column]
-    private bool $isVerified = false;
+    #[ORM\Column(type: 'boolean')]
+    private $isVerified = false;
+
+    #[ORM\Column(length: 255)]
+    private ?string $fullname = null;
+
+    #[ORM\OneToOne(mappedBy: 'user', cascade: ['persist', 'remove'])]
+    private ?Eleves $eleves = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $adresse = null;
 
     public function __toString()
     {
-        return (string) $this->getUsername();
+        return $this->username;
     }
+
 
     public function getId(): ?int
     {
@@ -96,7 +96,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @see UserInterface
-     * @return list<string>
      */
     public function getRoles(): array
     {
@@ -107,9 +106,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
-    /**
-     * @param list<string> $roles
-     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
@@ -165,23 +161,6 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getFullname(): ?string
-    {
-        return $this->prenom.' '.$this->nom;
-    }
-
-    public function getSlug(): ?string
-    {
-        return $this->slug;
-    }
-
-    public function setSlug(?string $slug): static
-    {
-        $this->slug = $slug;
-
-        return $this;
-    }
-
     public function getEmail(): ?string
     {
         return $this->email;
@@ -194,50 +173,48 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getAdresse(): ?string
-    {
-        return $this->adresse;
-    }
-
-    public function setAdresse(?string $adresse): static
-    {
-        $this->adresse = $adresse;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    public function isActif(): ?bool
+    public function isIsActif(): ?bool
     {
         return $this->isActif;
     }
 
-    public function setActif(bool $isActif): static
+    public function setIsActif(bool $isActif): static
     {
         $this->isActif = $isActif;
+
+        return $this;
+    }
+
+    public function getFullname(): ?string
+    {
+        return $this->fullname;
+    }
+
+    public function setFullname(string $fullname): static
+    {
+        $this->fullname = $fullname;
+
+        return $this;
+    }
+
+    public function getEleves(): ?Eleves
+    {
+        return $this->eleves;
+    }
+
+    public function setEleves(?Eleves $eleves): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($eleves === null && $this->eleves !== null) {
+            $this->eleves->setUser(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($eleves !== null && $eleves->getUser() !== $this) {
+            $eleves->setUser($this);
+        }
+
+        $this->eleves = $eleves;
 
         return $this;
     }
@@ -250,6 +227,18 @@ class Users implements UserInterface, PasswordAuthenticatedUserInterface
     public function setVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function getAdresse(): ?string
+    {
+        return $this->adresse;
+    }
+
+    public function setAdresse(?string $adresse): static
+    {
+        $this->adresse = $adresse;
 
         return $this;
     }

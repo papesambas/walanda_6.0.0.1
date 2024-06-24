@@ -7,49 +7,47 @@ use App\Entity\Users;
 use Symfony\Bundle\SecurityBundle\Security;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-class UsersEntityListener
+class usersEntityListener
 {
-    private $security;
+    private $Securty;
     private $Slugger;
-    private $tokenStorage;
 
-    public function __construct(Security $security, SluggerInterface $Slugger, TokenStorageInterface $tokenStorage)
+    public function __construct(Security $security, SluggerInterface $Slugger)
     {
-        $this->security = $security;
+        $this->Securty = $security;
         $this->Slugger = $Slugger;
-        $this->tokenStorage = $tokenStorage;
     }
-
-    public function prePersist(Users $users, LifecycleEventArgs $arg): void
+    public function prePersist(Users $user, LifecycleEventArgs $arg): void
     {
-        /*$user = $user = $this->tokenStorage->getToken()->getUser();
+        /*$user = $this->Securty->getUser();
         if ($user === null) {
             throw new LogicException('User cannot be null here ...');
         }*/
 
-        $users
+
+        $user
             ->setCreatedAt(new \DateTimeImmutable('now'))
-            ->setSlug($this->getPrenomsSlug($users));
+            ->setFullName($user->getNom() . ' ' . $user->getPrenom())
+            ->setSlug($this->getUsersSlug($user));
     }
 
-    public function preUpdate(Users $users, LifecycleEventArgs $arg): void
+    public function preUpdate(Users $user, LifecycleEventArgs $arg): void
     {
-        /*$user = $this->tokenStorage->getToken()->getUser();
+        /*$user = $this->Securty->getUser();
         if ($user === null) {
             throw new LogicException('User cannot be null here ...');
         }*/
 
-        $users
+        $user
             ->setUpdatedAt(new \DateTimeImmutable('now'))
-            ->setSlug($this->getPrenomsSlug($users));
+            ->setFullName($user->getNom() . ' ' . $user->getPrenom())
+            ->setSlug($this->getUsersSlug($user));
     }
 
-
-    private function getPrenomsSlug(Users $users): string
+    private function getUsersSlug(Users $users): string
     {
-        $slug = mb_strtolower($users->getUsername() . '' . $users->getId() . '' . time(), 'UTF-8');
+        $slug = mb_strtolower($users->getNom() . ' ' . $users->getPrenom() . '-' . $users->getId() . '-' . time(), 'UTF-8');
         return $this->Slugger->slug($slug);
     }
 }

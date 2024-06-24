@@ -16,6 +16,18 @@ class NomsRepository extends ServiceEntityRepository
         parent::__construct($registry, Noms::class);
     }
 
+    /**
+     * @return Noms[] Returns an array of Noms objects
+     */
+    public function findAll(): array
+    {
+        return $this->createQueryBuilder('n')
+            ->orderBy('n.designation', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }    
+
 //    /**
 //     * @return Noms[] Returns an array of Noms objects
 //     */

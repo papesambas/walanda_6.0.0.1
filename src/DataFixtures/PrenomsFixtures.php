@@ -2,12 +2,11 @@
 
 namespace App\DataFixtures;
 
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Faker;
 use App\Entity\Prenoms;
-use App\DataFixtures\NomsFixtures;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
 class PrenomsFixtures extends Fixture implements DependentFixtureInterface
 {

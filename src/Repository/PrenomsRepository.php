@@ -16,6 +16,19 @@ class PrenomsRepository extends ServiceEntityRepository
         parent::__construct($registry, Prenoms::class);
     }
 
+    /**
+     * @return Prenoms[] Returns an array of Prenoms objects
+     */
+    public function findAll(): array
+    {
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.designation', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+
 //    /**
 //     * @return Prenoms[] Returns an array of Prenoms objects
 //     */

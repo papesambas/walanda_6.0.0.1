@@ -2,10 +2,11 @@
 
 namespace App\DataFixtures;
 
-use Faker;
 use App\Entity\Noms;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Faker;
 
 class NomsFixtures extends Fixture
 {

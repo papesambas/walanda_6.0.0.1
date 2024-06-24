@@ -18,7 +18,6 @@ class UsersFixtures extends Fixture implements DependentFixtureInterface
         private SluggerInterface $slugger
     ) {
     }
-
     public function load(ObjectManager $manager): void
     {
         $faker = Faker\Factory::create('fr_FR');
@@ -27,6 +26,7 @@ class UsersFixtures extends Fixture implements DependentFixtureInterface
         $superAdmin->setNom($this->getReference('nom_' . $faker->numberBetween(1, 50)));
         $superAdmin->setPrenom($this->getReference('prenom_' . $faker->numberBetween(1, 100)));
         $superAdmin->setEmail('superadmin@demo.fr');
+        $superAdmin->setFullName('Super Admin');
         $superAdmin->setUsername('superadmin');
         $superAdmin->setPassword(
             $this->passwordEncoder->hashPassword($superAdmin, 'superadmin')
@@ -40,6 +40,7 @@ class UsersFixtures extends Fixture implements DependentFixtureInterface
         $admin->setNom($this->getReference('nom_' . $faker->numberBetween(1, 50)));
         $admin->setPrenom($this->getReference('prenom_' . $faker->numberBetween(1, 100)));
         $admin->setEmail('admin@demo.fr');
+        $admin->setFullName('Admin');
         $admin->setUsername('admin');
         $admin->setPassword(
             $this->passwordEncoder->hashPassword($admin, 'admin123')
@@ -55,6 +56,7 @@ class UsersFixtures extends Fixture implements DependentFixtureInterface
                 $user->setNom($this->getReference('nom_' . $faker->numberBetween(1, 50)));
                 $user->setPrenom($this->getReference('prenom_' . $faker->numberBetween(1, 100)));
                 $user->setEmail($faker->email);
+                $user->setFullName($faker->lastName() . ' ' . $faker->firstNameMale());
                 $user->setRoles(['ROLE_ENSEIGNANT']);
                 $user->setUsername('User' . ' ' . $this->counter);
                 $user->setPassword(
@@ -68,6 +70,7 @@ class UsersFixtures extends Fixture implements DependentFixtureInterface
                 $user->setNom($this->getReference('nom_' . $faker->numberBetween(1, 50)));
                 $user->setPrenom($this->getReference('prenom_' . $faker->numberBetween(1, 100)));
                 $user->setEmail($faker->email);
+                $user->setFullName($faker->lastName() . ' ' . $faker->firstNameMale());
                 $user->setRoles(['ROLE_SURVEILLANT']);
                 $user->setUsername('User' . ' ' . $this->counter);
                 $user->setPassword(
@@ -81,6 +84,7 @@ class UsersFixtures extends Fixture implements DependentFixtureInterface
                 $user->setNom($this->getReference('nom_' . $faker->numberBetween(1, 50)));
                 $user->setPrenom($this->getReference('prenom_' . $faker->numberBetween(1, 100)));
                 $user->setEmail($faker->email);
+                $user->setFullName($faker->lastName() . ' ' . $faker->firstNameMale());
                 $user->setRoles(['ROLE_SECRETAIRE']);
                 $user->setUsername('User' . ' ' . $this->counter);
                 $user->setPassword(
@@ -94,6 +98,7 @@ class UsersFixtures extends Fixture implements DependentFixtureInterface
                 $user->setNom($this->getReference('nom_' . $faker->numberBetween(1, 50)));
                 $user->setPrenom($this->getReference('prenom_' . $faker->numberBetween(1, 100)));
                 $user->setEmail($faker->email);
+                $user->setFullName($faker->lastName() . ' ' . $faker->firstNameMale());
                 $user->setRoles(['ROLE_CAISSIER']);
                 $user->setUsername('User' . ' ' . $this->counter);
                 $user->setPassword(
@@ -107,6 +112,7 @@ class UsersFixtures extends Fixture implements DependentFixtureInterface
                 $user->setNom($this->getReference('nom_' . $faker->numberBetween(1, 50)));
                 $user->setPrenom($this->getReference('prenom_' . $faker->numberBetween(1, 100)));
                 $user->setEmail($faker->email);
+                $user->setFullName($faker->lastName() . ' ' . $faker->firstNameMale());
                 $user->setRoles(['ROLE_FINANCE']);
                 $user->setUsername('User' . ' ' . $this->counter);
                 $user->setPassword(
@@ -120,6 +126,7 @@ class UsersFixtures extends Fixture implements DependentFixtureInterface
                 $user->setNom($this->getReference('nom_' . $faker->numberBetween(1, 50)));
                 $user->setPrenom($this->getReference('prenom_' . $faker->numberBetween(1, 100)));
                 $user->setEmail($faker->email);
+                $user->setFullName($faker->lastName() . ' ' . $faker->firstNameMale());
                 $user->setRoles(['ROLE_DIRECTION']);
                 $user->setUsername('User' . ' ' . $this->counter);
                 $user->setPassword(
@@ -137,7 +144,7 @@ class UsersFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies(): array
     {
         return [
-            PrenomsFixtures::class,
+            ProfessionsFixtures::class,
         ];
     }
 }
